@@ -11,26 +11,20 @@ class Day10 : BaseDay
     }
 
     public override ValueTask<string> Solve_1() =>
-        new($"{SumCycles()}");
+        new($"{SumCycles(new int[] { 20, 60, 100, 140, 180, 220 })}");
 
     public override ValueTask<string> Solve_2() =>
         new($"{Render()}");
 
-    private int SumCycles()
-    {
-        var cyclesToSum = new int[] { 20, 60, 100, 140, 180, 220 };
-        var result = AllSignalStrengths()
+    private int SumCycles(int[] cycles) => AllSignalStrengths()
             .Select((signal, index) => new { Value = signal * (index + 1), Index = (index + 1) })
-            .Where(p => cyclesToSum.Contains(p.Index))
+            .Where(p => cycles.Contains(p.Index))
             .Sum(p => p.Value);
-        return result;
-    }
-
+        
     private string Render()
     {
         var cycle = 1;
         var builder = new StringBuilder();
-        var cyclesToSum = new int[] { 40, 80, 120, 160, 200, 240 };
         foreach (var signal in AllSignalStrengths())
         {
             if (signal == cycle % 40 || signal + 1 == cycle % 40 || signal + 2 == cycle % 40)
