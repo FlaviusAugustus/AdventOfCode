@@ -19,7 +19,8 @@ class Day10 : BaseDay
     private int SumCycles()
     {
         var cyclesToSum = new int[] { 20, 60, 100, 140, 180, 220 };
-        var result = AllSignalStrengths().Select((signal, index) => new { Value = signal * (index + 1), Index = (index + 1) })
+        var result = AllSignalStrengths()
+            .Select((signal, index) => new { Value = signal * (index + 1), Index = (index + 1) })
             .Where(p => cyclesToSum.Contains(p.Index))
             .Sum(p => p.Value);
         return result;
@@ -27,19 +28,17 @@ class Day10 : BaseDay
 
     private string Render()
     {
-        var cycle= 1;
+        var cycle = 1;
         var builder = new StringBuilder();
         var cyclesToSum = new int[] { 40, 80, 120, 160, 200, 240 };
         foreach (var signal in AllSignalStrengths())
         {
-            if(signal == cycle % 40 || signal + 1 == cycle  % 40|| signal + 2 == cycle % 40) 
+            if (signal == cycle % 40 || signal + 1 == cycle % 40 || signal + 2 == cycle % 40)
                 builder.Append("#");
             else
                 builder.Append(".");
-            if(cycle % 40 == 0)
-            {
+            if (cycle % 40 == 0)
                 builder.Append(Environment.NewLine);
-            }
             cycle++;
         }
         return builder.ToString();
@@ -50,11 +49,10 @@ class Day10 : BaseDay
         var result = 1;
         foreach (var operation in AllOperations())
         {
-            for (int i = 0; i < operation.Length - 1; i++)
+            for (int i = 0; i < operation.Length; i++)
             {
                 yield return result;
             }
-            yield return result;
             result += operation.Value;
         }
     }
@@ -62,7 +60,6 @@ class Day10 : BaseDay
     private IEnumerable<Operation> AllOperations() => _input
         .Split(Environment.NewLine)
         .Select(line => Operation.Parse(line));
-
 }
 
 internal record Operation(int Value, int Length)
