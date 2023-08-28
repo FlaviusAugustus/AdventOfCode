@@ -3,8 +3,8 @@ using System.Text;
 
 class Day10 : BaseDay
 {
-
     private readonly string _input;
+
     public Day10()
     {
         _input = File.ReadAllText($"{InputFilePath}");
@@ -13,14 +13,14 @@ class Day10 : BaseDay
     public override ValueTask<string> Solve_1() =>
         new($"{SumCycles(new int[] { 20, 60, 100, 140, 180, 220 })}");
 
-    public override ValueTask<string> Solve_2() =>
-        new($"{Render()}");
+    public override ValueTask<string> Solve_2() => new($"{Render()}");
 
-    private int SumCycles(int[] cycles) => AllSignalStrengths()
+    private int SumCycles(int[] cycles) =>
+        AllSignalStrengths()
             .Select((signal, index) => new { Value = signal * (index + 1), Index = (index + 1) })
             .Where(p => cycles.Contains(p.Index))
             .Sum(p => p.Value);
-        
+
     private string Render()
     {
         var cycle = 1;
@@ -51,9 +51,8 @@ class Day10 : BaseDay
         }
     }
 
-    private IEnumerable<Operation> AllOperations() => _input
-        .Split(Environment.NewLine)
-        .Select(line => Operation.Parse(line));
+    private IEnumerable<Operation> AllOperations() =>
+        _input.Split(Environment.NewLine).Select(line => Operation.Parse(line));
 }
 
 internal record Operation(int Value, int Length)
@@ -63,19 +62,15 @@ internal record Operation(int Value, int Length)
         var lineSplit = line.Split(' ');
         var length = lineSplit.Length != 1 ? int.Parse(lineSplit[1]) : 0;
 
-        return new Operation
-        (
-            length,
-            GetOperationLength(lineSplit[0])
-        );
+        return new Operation(length, GetOperationLength(lineSplit[0]));
     }
 
-    private static int GetOperationLength(string operation) => operation switch
-    {
-        "addx" => 2,
-        "noop" => 1,
-        "" => 0,
-        _ => throw new ArgumentException(operation)
-    };
+    private static int GetOperationLength(string operation) =>
+        operation switch
+        {
+            "addx" => 2,
+            "noop" => 1,
+            "" => 0,
+            _ => throw new ArgumentException(operation)
+        };
 }
-
