@@ -10,16 +10,20 @@ class Day11 : BaseDay
     }
 
     public override ValueTask<string> Solve_1()  =>
-        new($"{ExecuteRounds(20, WorryLevelPart1)}");
+        new($"{Part1()}");
 
     public override ValueTask<string> Solve_2()  =>
-        new($"{ExecuteRounds(10000, WorryLevelPart2)}");
+        new($"{Part2()}");
 
-    private long WorryLevelPart1(long worryLevel) =>
-        worryLevel / 3;
+    public long Part1() =>
+        ExecuteRounds(20, ParseMonkeys(), x => x / 3);
 
-    private long WorryLevelPart2(long worryLevel) =>
-        worryLevel % 9699690; 
+    public long Part2()
+    {
+        var monkeys = ParseMonkeys();
+        var multipliedDivisors = monkeys.Select(monkey => monkey.Divisor).Aggregate((current, next) => current*next);
+        return ExecuteRounds(10000, monkeys, x => x % multipliedDivisors);
+    }
 
     public List<Monkey> ParseMonkeys() => _input
             .Split($"{Environment.NewLine}{Environment.NewLine}")
@@ -33,9 +37,8 @@ class Day11 : BaseDay
             .Take(2)
             .Aggregate((first, last) => first*last);
     
-    public long ExecuteRounds(int rounds, Func<long, long> worryManager)
+    public long ExecuteRounds(int rounds, List<Monkey> monkeys, Func<long, long> worryManager)
     {
-        var monkeys = ParseMonkeys();
         foreach(var round in Enumerable.Range(1, rounds))
         {
             ExecuteRound(monkeys, worryManager);
@@ -47,47 +50,39 @@ class Day11 : BaseDay
     {
         foreach(var monkey in monkeys)
         {
-            foreach(var change in monkey.GetMoves(worryManager)) 
+            while(monkey.Items.Any())
             {
-                monkeys[change.Id].Items.Add(change.Item);
+                monkey.ItemsHandled++;
+
+                var item = monkey.Items.Dequeue();
+                var inspected = worryManager(monkey.Operation(item));
+
+                var id = inspected % monkey.Divisor == 0 ? 
+                    monkey.TrueId : 
+                    monkey.FalseId;
+
+                monkeys[id].Items.Enqueue(inspected);
             }
-            monkey.ExecuteRound();
         }
     }
 }
 
-record Move(int Id, long Item);
 
 class Monkey {
 
-    public required List<long> Items {get; set;}
+    public required Queue<long> Items {get; set;}
     public required Func<long, long> Operation{get; set;}
     public required int Divisor{get; set;}
     public required int TrueId{get; set;}
     public required int FalseId{get; set;}
     public required long ItemsHandled{get; set;}
 
-    public IEnumerable<Move> GetMoves(Func<long, long> worryManager)
-    {
-        foreach(var item in Items) 
-        {
-            var inspected = worryManager(Operation(item));
-            yield return new(inspected % Divisor == 0 ? TrueId : FalseId, inspected);
-        }
-    }
-    
-    public void ExecuteRound()
-    {
-        ItemsHandled += Items.Count;
-        Items.Clear();
-    }
-
     public static Monkey Parse(string input)
     {
         var lines = input.Split(Environment.NewLine);
 
         var items = lines[1].Split(":")[1].Split(",");
-        var parsedItems = items.Select(i => long.Parse(i)).ToList();
+        var parsedItems = new Queue<long>(items.Select(i => long.Parse(i)));
 
         var o = lines[2].Split(" ")[^2];
         var operand = lines[2].Split(" ")[^1];
