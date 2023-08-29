@@ -6,87 +6,120 @@ class Day11 : BaseDay
 
     public Day11()
     {
-        _input = File.ReadAllText(InputFilePath);
+        _input = File.ReadAllText($"{InputFilePath}");
     }
 
     public override ValueTask<string> Solve_1()  =>
-        new($"{ExecuteRounds(20)}");
+        new($"{ExecuteRounds(20, WorryLevelPart1)}");
 
     public override ValueTask<string> Solve_2()  =>
-        new($"");
+        new($"{ExecuteRounds(10000, WorryLevelPart2)}");
+
+    private long WorryLevelPart1(long worryLevel) =>
+        worryLevel / 3;
+
+    private long WorryLevelPart2(long worryLevel) =>
+        worryLevel % 9699690; 
 
     public List<Monkey> ParseMonkeys() => _input
             .Split($"{Environment.NewLine}{Environment.NewLine}")
             .Select(monkeyRaw => Monkey.Parse(monkeyRaw))
             .ToList();
+
+    private long CalculateResult(IEnumerable<Monkey> monkeys) => monkeys
+            .Select(monkey => monkey.ItemsHandled)
+            .OrderBy(items => items)
+            .Reverse()
+            .Take(2)
+            .Aggregate((first, last) => first*last);
     
-    public int ExecuteRounds(int rounds)
+    public long ExecuteRounds(int rounds, Func<long, long> worryManager)
     {
         var monkeys = ParseMonkeys();
-        
-        for(int i = 0; i < rounds; i++ )
+        foreach(var round in Enumerable.Range(1, rounds))
         {
-            for(int j = 0; j < monkeys.Count; j++)
-            {
-                for(int k = 0; k < monkeys[j].Items.Count; k++) 
-                {
-                    monkeys[j] = monkeys[j] with {itemsHandled = monkeys[j].itemsHandled+1};
-                    var item = monkeys[j].Items[k];
-                    if(monkeys[j].Operation(item) % monkeys[j].Divisor == 0)
-                    {
-                        monkeys[j].Items.Remove(item);
-                        monkeys[monkeys[j].TrueId].Items.Add(item);
-                    }
-                    else {
-                        monkeys[j].Items.Remove(item);
-                        monkeys[monkeys[j].FalseId].Items.Add(item);
-                    }
-                }
-            }
+            ExecuteRound(monkeys, worryManager);
         }
-
-        var res = monkeys.OrderBy(monkey => monkey.itemsHandled).Reverse().Take(2).ToList();
-        return res[0].itemsHandled * res[1].itemsHandled;
+        return CalculateResult(monkeys);
     }
 
+    private void ExecuteRound(List<Monkey> monkeys, Func<long, long> worryManager)
+    {
+        foreach(var monkey in monkeys)
+        {
+            foreach(var change in monkey.GetMoves(worryManager)) 
+            {
+                monkeys[change.Id].Items.Add(change.Item);
+            }
+            monkey.ExecuteRound();
+        }
+    }
 }
 
-record Monkey
-(
-    int Id,
-    List<int> Items,
-    Func<int, int> Operation,
-    int Divisor,
-    int TrueId,
-    int FalseId,
-    int itemsHandled
-) 
-{
+record Move(int Id, long Item);
+
+class Monkey {
+
+    public required List<long> Items {get; set;}
+    public required Func<long, long> Operation{get; set;}
+    public required int Divisor{get; set;}
+    public required int TrueId{get; set;}
+    public required int FalseId{get; set;}
+    public required long ItemsHandled{get; set;}
+
+    public IEnumerable<Move> GetMoves(Func<long, long> worryManager)
+    {
+        foreach(var item in Items) 
+        {
+            var inspected = worryManager(Operation(item));
+            yield return new(inspected % Divisor == 0 ? TrueId : FalseId, inspected);
+        }
+    }
+    
+    public void ExecuteRound()
+    {
+        ItemsHandled += Items.Count;
+        Items.Clear();
+    }
+
     public static Monkey Parse(string input)
     {
         var lines = input.Split(Environment.NewLine);
-        var id = int.Parse(lines[0].Split(" ")[^1][..^1]);
 
         var items = lines[1].Split(":")[1].Split(",");
-        var parsedItems = items.Select(i => int.Parse(i)).ToList();
+        var parsedItems = items.Select(i => long.Parse(i)).ToList();
 
         var o = lines[2].Split(" ")[^2];
-        var operand = int.Parse(lines[2].Split(" ")[^1]);
-        Func<int, int> operation = o switch
+        var operand = lines[2].Split(" ")[^1];
+        Func<long, long> operation;
+        if(operand == "old") 
         {
-            "*"  => (i) => i * operand,
-            "+" => (i) => i + operand,
-            _ => throw new ArgumentException()
-        };
+            operation = (i) => i * i;
+        }
+        else 
+        {
+            operation = o switch
+            {
+                "*"  => (i) => i * int.Parse(operand),
+                "+" => (i) => i + int.Parse(operand),
+                _ => throw new ArgumentException()
+            };
+        }
         
         var divisor = int.Parse(lines[3].Split(" ")[^1]);
 
         var trueId = int.Parse(lines[4].Split(" ")[^1]);
         var falseId = int.Parse(lines[5].Split(" ")[^1]);
         
-        return new(id, parsedItems, operation, divisor, trueId, falseId, 0);
+        return new Monkey
+        {
+            Items = parsedItems,
+            Operation = operation,
+            Divisor = divisor,
+            TrueId = trueId,
+            FalseId = falseId,
+            ItemsHandled = 0
+        };
     }
-
-    
 }
 
