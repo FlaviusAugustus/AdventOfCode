@@ -11,7 +11,7 @@ class Day10 : BaseDay
     }
 
     public override ValueTask<string> Solve_1() =>
-        new($"{SumCycles(new int[] { 20, 60, 100, 140, 180, 220 })}");
+        new($"{SumCycles(new [] { 20, 60, 100, 140, 180, 220 })}");
 
     public override ValueTask<string> Solve_2() => new($"{Render()}");
 
@@ -52,7 +52,7 @@ class Day10 : BaseDay
     }
 
     private IEnumerable<Operation> AllOperations() =>
-        _input.Split(Environment.NewLine).Select(line => Operation.Parse(line));
+        _input.Split(Environment.NewLine).Select(Operation.Parse);
 }
 
 internal record Operation(int Value, int Length)

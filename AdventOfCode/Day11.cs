@@ -21,13 +21,15 @@ class Day11 : BaseDay
     public long Part2()
     {
         var monkeys = ParseMonkeys();
-        var multipliedDivisors = monkeys.Select(monkey => monkey.Divisor).Aggregate((current, next) => current*next);
+        var multipliedDivisors = monkeys
+            .Select(monkey => monkey.Divisor)
+            .Aggregate((current, next) => current*next);
         return ExecuteRounds(10000, monkeys, x => x % multipliedDivisors);
     }
 
     public List<Monkey> ParseMonkeys() => _input
             .Split($"{Environment.NewLine}{Environment.NewLine}")
-            .Select(monkeyRaw => Monkey.Parse(monkeyRaw))
+            .Select(Monkey.Parse)
             .ToList();
 
     private long CalculateResult(IEnumerable<Monkey> monkeys) => monkeys
@@ -67,8 +69,7 @@ class Day11 : BaseDay
     }
 }
 
-
-class Monkey {
+internal class Monkey {
 
     public required Queue<long> Items {get; set;}
     public required Func<long, long> Operation{get; set;}
@@ -82,22 +83,22 @@ class Monkey {
         var lines = input.Split(Environment.NewLine);
 
         var items = lines[1].Split(":")[1].Split(",");
-        var parsedItems = new Queue<long>(items.Select(i => long.Parse(i)));
+        var parsedItems = new Queue<long>(items.Select(long.Parse));
 
         var o = lines[2].Split(" ")[^2];
         var operand = lines[2].Split(" ")[^1];
         Func<long, long> operation;
         if(operand == "old") 
         {
-            operation = (i) => i * i;
+            operation = i => i * i;
         }
         else 
         {
             operation = o switch
             {
-                "*"  => (i) => i * int.Parse(operand),
-                "+" => (i) => i + int.Parse(operand),
-                _ => throw new ArgumentException()
+                "*"  => i => i * int.Parse(operand),
+                "+" => i => i + int.Parse(operand),
+                _ => throw new ArgumentException(o)
             };
         }
         
