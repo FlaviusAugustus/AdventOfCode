@@ -8,7 +8,7 @@ public class Day01 : BaseDay
    
    public Day01()
    {
-      _input = File.ReadAllText($"{InputFilePath}");
+      _input = File.ReadAllText($"../../../{InputFilePath}");
    }
 
    public override ValueTask<string> Solve_1() =>

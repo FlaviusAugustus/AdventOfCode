@@ -6,6 +6,6 @@ public static class Results
 {
    public static void Main()
    {
-      Solver.SolveLast();
+      Solver.Solve<Day12>();
    }
 }
