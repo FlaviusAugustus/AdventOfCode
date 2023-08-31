@@ -5,90 +5,124 @@ namespace AdventOfCode;
 
 class Day12 : BaseDay
 {
-    private readonly string _input; 
+    private readonly string _input;
+    private const char Start = 'S';
+    private const char End = 'E';
 
     public Day12()
     {
-        _input = File.ReadAllText($"../../../{InputFilePath}");
+        _input = File.ReadAllText($"{InputFilePath}");
     }
 
     public override ValueTask<string> Solve_1() =>
-        new($"{new PathFinder().FindShortestPathLength(_input.Split(Environment.NewLine))}");
+        new($"{Solve1()}");
 
-    public override ValueTask<string> Solve_2()
+    public override ValueTask<string> Solve_2() =>
+        new($"{Solve2()}");
+
+    // searching end to start so the code from part 1 can be used in part 2
+    private int Solve1()
     {
-        throw new NotImplementedException();
+        var start = FindPosition(Start);
+        var end = FindPosition(End);
+        return new PathFinder(_input.Split(Environment.NewLine))
+            .FindShortestPathLength(end)
+            .Single(cell => cell.Position == start)
+            .Distance;
+    }
+
+    private int Solve2()
+    {
+        var end = FindPosition(End);
+        return new PathFinder(_input.Split(Environment.NewLine))
+            .FindShortestPathLength(end)
+            .Where(c => c.Value == 'a')
+            .MinBy(cell => cell.Distance)! // Supressed - there will always be at least 1 cell with value of 'a'
+            .Distance;
+    }
+
+    private Point FindPosition(char symbol)
+    {
+        var splitInput = _input.Split(Environment.NewLine);
+        var y = splitInput
+            .Select((s, i) => new { Index = i, Value = s })
+            .Single(item => item.Value.Contains(symbol)).Index;
+        var x = splitInput[y].IndexOf(symbol);
+        return new(x, y);
     }
 }
 
 internal class Cell
 {
-    public int X { get; set; }
-    public int Y { get; set; }
-    public char Value  { get; set; }
-    public int Distance { get; set; }
-
-    public IEnumerable<Cell> GetNeighbours(List<List<Cell>> grid)
+    private readonly char _value;
+    public required char Value
     {
-        var deltas = new int[][] { new int[] { 1, 0 }, new int[] { -1, 0 }, new int[] { 0, 1 }, new int[] { 0, -1 } };
-        foreach (var delta in deltas)
+        get => _value;
+        init => _value = value switch
         {
-            if (IsValidPosition(X + delta[0], Y + delta[1], grid))
-            {
-                yield return grid[Y + delta[1]][X + delta[0]];
-            }
+            'S' => 'a',
+            'E' => 'z',
+            _ => value
+        };
+    }
+    public required Point Position { get; init; } 
+    public required int Distance { get; set; }
+
+    public IEnumerable<Cell> GetNeighbours(Dictionary<Point, Cell> grid)
+    {
+        var points = new []
+        {
+            (Position with { X = Position.X - 1 }),
+            (Position with { Y = Position.Y + 1 }),
+            (Position with { X = Position.X + 1 }),
+            (Position with { Y = Position.Y - 1 }),
+        };
+        foreach (var point in points)
+        {
+            if (grid.TryGetValue(point, out var cell))
+                yield return cell;
         }
     }
-
-    private static bool IsValidPosition(int x, int y, List<List<Cell>> grid) =>
-        x >= 0 && y >= 0 && x < grid[0].Count && y < grid.Count;
 }
 
 internal class PathFinder
 {
-    private readonly PriorityQueue<Cell, int> _priority = new(Comparer<int>.Create((x, y) => x - y));
-    
-    public int FindShortestPathLength(string[] grid)
-    {
-        Cell end = new();
-        List<List<Cell>> cells = new(grid.Length);
-        for (var i = 0; i < grid.Length; i++)
-        {
-            List<Cell> row = new();
-            for (var j = 0; j < grid[i].Length; j++)
-            {
-                var dist = 10000;
-                if (grid[i][j] == 'S')
-                    dist = 0;
-                var cell = new Cell { X = j, Y = i, Value = grid[i][j], Distance = dist };
-                if (grid[i][j] == 'S')
-                {
-                    cell.Value = 'a';
-                    _priority.Enqueue(cell, cell.Distance);
-                }
-                if (grid[i][j] == 'E') {
-                    cell.Value = 'z';
-                    end = cell;
-                }
-                row.Add(cell);
-            }
-            cells.Add(row);
-        }
+    private readonly string[] _grid;
 
+    public PathFinder(string[] grid) =>
+        _grid = grid;
+
+    private IEnumerable<Cell> GetAllCells()
+    {
+        for (var i = 0; i < _grid.Length; i++)
+            for (var j = 0; j < _grid[i].Length; j++) 
+                yield return new Cell
+                {
+                    Position = new (j, i), 
+                    Value = _grid[i][j], 
+                    Distance = int.MaxValue
+                };
+    }
+
+    public IEnumerable<Cell> FindShortestPathLength(Point start)
+    {
+        Dictionary<Point, Cell> cel = GetAllCells().ToDictionary(cell => cell.Position);
+        PriorityQueue<Cell, int> _priority = new(Comparer<int>.Create((x, y) => x - y));
+        cel[start].Distance = 0;
+        _priority.Enqueue(cel[start], cel[start].Distance);
         while (_priority.Count != 0)
         {
             var current = _priority.Dequeue();
-            foreach (var neighbour in current.GetNeighbours(cells))
+            foreach (var neighbour in current.GetNeighbours(cel))
             {
                 var alt = current.Distance + 1;
-                if (alt < neighbour.Distance && (Math.Abs(current.Value - neighbour.Value) <= 1 || neighbour.Value < current.Value))
+                if (alt < neighbour.Distance && (Math.Abs(current.Value - neighbour.Value) <= 1) || current.Value < neighbour.Value)
                 {
                     neighbour.Distance = alt;
-                    _priority.Enqueue(neighbour, alt);
+                    _priority.Enqueue(neighbour, neighbour.Distance);
                 }
             }
         }
-
-        return cells[end.Y][end.X].Distance;
+        return cel.Values;
     }
 }
