@@ -15,10 +15,10 @@ class Day11 : BaseDay
     public override ValueTask<string> Solve_2()  =>
         new($"{Part2()}");
 
-    public long Part1() =>
+    private long Part1() =>
         ExecuteRounds(20, ParseMonkeys(), x => x / 3);
 
-    public long Part2()
+    private long Part2()
     {
         var monkeys = ParseMonkeys();
         var multipliedDivisors = monkeys
@@ -27,8 +27,8 @@ class Day11 : BaseDay
         return ExecuteRounds(10000, monkeys, x => x % multipliedDivisors);
     }
 
-    public List<Monkey> ParseMonkeys() => _input
-            .Split($"{Environment.NewLine}{Environment.NewLine}")
+    private List<Monkey> ParseMonkeys() => _input
+        .Split($"{Environment.NewLine}{Environment.NewLine}")
             .Select(Monkey.Parse)
             .ToList();
 
@@ -39,7 +39,7 @@ class Day11 : BaseDay
             .Take(2)
             .Aggregate((first, last) => first*last);
     
-    public long ExecuteRounds(int rounds, List<Monkey> monkeys, Func<long, long> worryManager)
+    private long ExecuteRounds(int rounds, List<Monkey> monkeys, Func<long, long> worryManager)
     {
         foreach(var round in Enumerable.Range(1, rounds))
         {
@@ -71,12 +71,12 @@ class Day11 : BaseDay
 
 internal class Monkey {
 
-    public required Queue<long> Items {get; set;}
-    public required Func<long, long> Operation{get; set;}
-    public required int Divisor{get; set;}
-    public required int TrueId{get; set;}
-    public required int FalseId{get; set;}
-    public required long ItemsHandled{get; set;}
+    public required Queue<long> Items { get; set; }
+    public required Func<long, long> Operation { get; set; }
+    public required int Divisor { get; set; }
+    public required int TrueId { get; set; }
+    public required int FalseId { get; set; }
+    public required long ItemsHandled { get; set; }
 
     public static Monkey Parse(string input)
     {
