@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "RBMfSy1DS0md8cTbPIZOFVhODvmMbuVqwTw+NnXw8QRqnT3nEbpl/MAqgtq6Zh7rp+M8Raytene1BRwh0RqqUA==",
+  "dgSpecHash": "j3+AgW5CL7E6G5+9nRBM7qjZYn3wZpmbD7VP4FSJgLDSXcPE24GDYfeXE4IiODOiYzSUPa/N4snBOExRqMSrtg==",
   "success": true,
-  "projectFilePath": "/home/gracjangrzech/RiderProjects/AdventOfCode2022/AdventOfCode/AdventOfCode.csproj",
+  "projectFilePath": "C:\\Users\\gracj\\RiderProjects\\AdventOfCode\\AdventOfCode\\AdventOfCode.csproj",
   "expectedPackageFiles": [
-    "/home/gracjangrzech/.nuget/packages/aochelper/2.0.2/aochelper.2.0.2.nupkg.sha512",
-    "/home/gracjangrzech/.nuget/packages/spectre.console/0.45.0/spectre.console.0.45.0.nupkg.sha512",
-    "/home/gracjangrzech/.nuget/packages/system.memory/4.5.5/system.memory.4.5.5.nupkg.sha512"
+    "C:\\Users\\gracj\\.nuget\\packages\\aochelper\\2.0.2\\aochelper.2.0.2.nupkg.sha512",
+    "C:\\Users\\gracj\\.nuget\\packages\\spectre.console\\0.45.0\\spectre.console.0.45.0.nupkg.sha512",
+    "C:\\Users\\gracj\\.nuget\\packages\\system.memory\\4.5.5\\system.memory.4.5.5.nupkg.sha512"
   ],
   "logs": []
 }

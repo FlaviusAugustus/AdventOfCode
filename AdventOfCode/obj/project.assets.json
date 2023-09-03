@@ -111,19 +111,19 @@
     ]
   },
   "packageFolders": {
-    "/home/gracjangrzech/.nuget/packages/": {}
+    "C:\\Users\\gracj\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/gracjangrzech/RiderProjects/AdventOfCode2022/AdventOfCode/AdventOfCode.csproj",
+      "projectUniqueName": "C:\\Users\\gracj\\RiderProjects\\AdventOfCode\\AdventOfCode\\AdventOfCode.csproj",
       "projectName": "AdventOfCode",
-      "projectPath": "/home/gracjangrzech/RiderProjects/AdventOfCode2022/AdventOfCode/AdventOfCode.csproj",
-      "packagesPath": "/home/gracjangrzech/.nuget/packages/",
-      "outputPath": "/home/gracjangrzech/RiderProjects/AdventOfCode2022/AdventOfCode/obj/",
+      "projectPath": "C:\\Users\\gracj\\RiderProjects\\AdventOfCode\\AdventOfCode\\AdventOfCode.csproj",
+      "packagesPath": "C:\\Users\\gracj\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\gracj\\RiderProjects\\AdventOfCode\\AdventOfCode\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/home/gracjangrzech/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\gracj\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net7.0"
@@ -168,7 +168,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/lib64/dotnet/sdk/7.0.110/RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
       }
     }
   }

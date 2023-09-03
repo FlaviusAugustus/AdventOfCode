@@ -85,41 +85,43 @@ internal class Cell
     }
 }
 
+
 internal class PathFinder
 {
     private readonly string[] _grid;
 
     public PathFinder(string[] grid) =>
         _grid = grid;
+    
 
     private IEnumerable<Cell> GetAllCells()
     {
         for (var i = 0; i < _grid.Length; i++)
-            for (var j = 0; j < _grid[i].Length; j++) 
-                yield return new Cell
-                {
-                    Position = new (j, i), 
-                    Value = _grid[i][j], 
-                    Distance = int.MaxValue
-                };
+        for (var j = 0; j < _grid[i].Length; j++) 
+            yield return new Cell
+            {
+                Position = new (j, i), 
+                Value = _grid[i][j], 
+                Distance = int.MaxValue
+            };
     }
 
     public IEnumerable<Cell> FindShortestPathLength(Point start)
     {
         Dictionary<Point, Cell> cel = GetAllCells().ToDictionary(cell => cell.Position);
-        PriorityQueue<Cell, int> _priority = new(Comparer<int>.Create((x, y) => x - y));
+        PriorityQueue<Cell, int> priority = new(Comparer<int>.Create((x, y) => x - y));
         cel[start].Distance = 0;
-        _priority.Enqueue(cel[start], cel[start].Distance);
-        while (_priority.Count != 0)
+        priority.Enqueue(cel[start], cel[start].Distance);
+        while (priority.Count != 0)
         {
-            var current = _priority.Dequeue();
+            var current = priority.Dequeue();
             foreach (var neighbour in current.GetNeighbours(cel))
             {
                 var alt = current.Distance + 1;
                 if (alt < neighbour.Distance && (Math.Abs(current.Value - neighbour.Value) <= 1) || current.Value < neighbour.Value)
                 {
                     neighbour.Distance = alt;
-                    _priority.Enqueue(neighbour, neighbour.Distance);
+                    priority.Enqueue(neighbour, neighbour.Distance);
                 }
             }
         }
