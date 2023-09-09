@@ -1,5 +1,4 @@
-﻿using AdventOfCode;
-using AoCHelper;
+﻿using AoCHelper;
 
 namespace AdventOfCode;
 
@@ -20,7 +19,6 @@ class Day12 : BaseDay
     public override ValueTask<string> Solve_2() =>
         new($"{Solve2()}");
 
-    // searching end to start so the code from part 1 can be used in part 2
     private int Solve1()
     {
         var start = FindPosition(Start);
@@ -37,7 +35,7 @@ class Day12 : BaseDay
         return new PathFinder(_input.Split(Environment.NewLine))
             .FindShortestPathLength(end)
             .Where(c => c.Value == 'a')
-            .MinBy(cell => cell.Distance)! // Supressed - there will always be at least 1 cell with value of 'a'
+            .MinBy(cell => cell.Distance)! 
             .Distance;
     }
 
@@ -72,10 +70,10 @@ internal class Cell
     {
         var points = new []
         {
-            (Position with { X = Position.X - 1 }),
-            (Position with { Y = Position.Y + 1 }),
-            (Position with { X = Position.X + 1 }),
-            (Position with { Y = Position.Y - 1 }),
+            Position with { X = Position.X - 1 },
+            Position with { Y = Position.Y + 1 },
+            Position with { X = Position.X + 1 },
+            Position with { Y = Position.Y - 1 }
         };
         foreach (var point in points)
         {
@@ -84,7 +82,6 @@ internal class Cell
         }
     }
 }
-
 
 internal class PathFinder
 {
@@ -118,7 +115,7 @@ internal class PathFinder
             foreach (var neighbour in current.GetNeighbours(cel))
             {
                 var alt = current.Distance + 1;
-                if (alt < neighbour.Distance && (Math.Abs(current.Value - neighbour.Value) <= 1) || current.Value < neighbour.Value)
+                if (alt < neighbour.Distance && Math.Abs(current.Value - neighbour.Value) <= 1 || current.Value < neighbour.Value)
                 {
                     neighbour.Distance = alt;
                     priority.Enqueue(neighbour, neighbour.Distance);

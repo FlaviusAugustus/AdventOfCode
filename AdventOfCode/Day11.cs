@@ -41,7 +41,7 @@ class Day11 : BaseDay
     
     private long ExecuteRounds(int rounds, List<Monkey> monkeys, Func<long, long> worryManager)
     {
-        foreach(var round in Enumerable.Range(1, rounds))
+        while(rounds-- > 0)
         {
             ExecuteRound(monkeys, worryManager);
         }
@@ -54,15 +54,11 @@ class Day11 : BaseDay
         {
             while(monkey.Items.Any())
             {
-                monkey.ItemsHandled++;
-
                 var item = monkey.Items.Dequeue();
                 var inspected = worryManager(monkey.Operation(item));
+                var id = inspected % monkey.Divisor == 0 ? monkey.TrueId : monkey.FalseId;
 
-                var id = inspected % monkey.Divisor == 0 ? 
-                    monkey.TrueId : 
-                    monkey.FalseId;
-
+                monkey.ItemsHandled++;
                 monkeys[id].Items.Enqueue(inspected);
             }
         }
@@ -71,39 +67,23 @@ class Day11 : BaseDay
 
 internal class Monkey {
 
-    public required Queue<long> Items { get; set; }
-    public required Func<long, long> Operation { get; set; }
-    public required int Divisor { get; set; }
-    public required int TrueId { get; set; }
-    public required int FalseId { get; set; }
+    public required Queue<long> Items { get; init; }
+    public required Func<long, long> Operation { get; init; }
+    public required int Divisor { get; init; }
+    public required int TrueId { get; init; }
+    public required int FalseId { get; init; }
     public required long ItemsHandled { get; set; }
 
     public static Monkey Parse(string input)
     {
         var lines = input.Split(Environment.NewLine);
-
         var items = lines[1].Split(":")[1].Split(",");
         var parsedItems = new Queue<long>(items.Select(long.Parse));
 
-        var o = lines[2].Split(" ")[^2];
+        var operatorString = lines[2].Split(" ")[^2];
         var operand = lines[2].Split(" ")[^1];
-        Func<long, long> operation;
-        if(operand == "old") 
-        {
-            operation = i => i * i;
-        }
-        else 
-        {
-            operation = o switch
-            {
-                "*"  => i => i * int.Parse(operand),
-                "+" => i => i + int.Parse(operand),
-                _ => throw new ArgumentException(o)
-            };
-        }
-        
+        var operation = ParseOperation(operatorString, operand);
         var divisor = int.Parse(lines[3].Split(" ")[^1]);
-
         var trueId = int.Parse(lines[4].Split(" ")[^1]);
         var falseId = int.Parse(lines[5].Split(" ")[^1]);
         
@@ -117,5 +97,18 @@ internal class Monkey {
             ItemsHandled = 0
         };
     }
+
+    private static Func<long, long> ParseOperation(string operatorString, string operand) => operand switch
+    {
+        "old" => i => i * i,
+        _ => ParseOperator(operatorString, operand)
+    };
+    
+    private static Func<long, long> ParseOperator(string operatorString, string operand) => operatorString switch
+    {
+        "*" => i => i * int.Parse(operand),
+        "+" => i => i + int.Parse(operand),
+        _ => throw new ArgumentException(operatorString)
+    };
 }
 

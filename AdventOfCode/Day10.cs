@@ -17,7 +17,7 @@ class Day10 : BaseDay
 
     private int SumCycles(int[] cycles) =>
         AllSignalStrengths()
-            .Select((signal, index) => new { Value = signal * (index + 1), Index = (index + 1) })
+            .Select((signal, index) => new { Value = signal * (index + 1), Index = index + 1 })
             .Where(p => cycles.Contains(p.Index))
             .Sum(p => p.Value);
 
@@ -28,9 +28,9 @@ class Day10 : BaseDay
         foreach (var signal in AllSignalStrengths())
         {
             if (signal == cycle % 40 || signal + 1 == cycle % 40 || signal + 2 == cycle % 40)
-                builder.Append("#");
+                builder.Append('#');
             else
-                builder.Append(".");
+                builder.Append('.');
             if (cycle % 40 == 0)
                 builder.Append(Environment.NewLine);
             cycle++;
@@ -43,7 +43,7 @@ class Day10 : BaseDay
         var result = 1;
         foreach (var operation in AllOperations())
         {
-            for (int i = 0; i < operation.Length; i++)
+            for (var i = 0; i < operation.Length; i++)
             {
                 yield return result;
             }

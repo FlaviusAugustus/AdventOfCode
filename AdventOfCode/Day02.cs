@@ -23,7 +23,7 @@ public class Day02 : BaseDay
        IEnumerable<int> points =
             from round in _input.Split(Environment.NewLine)
             select evaluator(round);
-       return points.Sum();
+            return points.Sum();
    }
 
    private int EvalRoundWithStrategy(string round) =>
@@ -79,7 +79,7 @@ public class Day02 : BaseDay
          Move.Paper => Move.Scissors,
          Move.Scissors => Move.Rock,
          _ => throw new ArgumentException()
-      };
+     };
 
       public static char ToChar(this Move move) => move switch
       {

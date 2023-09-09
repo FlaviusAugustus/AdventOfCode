@@ -52,3 +52,4 @@ C:\Users\gracj\RiderProjects\AdventOfCode\AdventOfCode\obj\Debug\net7.0\refint\A
 C:\Users\gracj\RiderProjects\AdventOfCode\AdventOfCode\obj\Debug\net7.0\AdventOfCode.pdb
 C:\Users\gracj\RiderProjects\AdventOfCode\AdventOfCode\obj\Debug\net7.0\AdventOfCode.genruntimeconfig.cache
 C:\Users\gracj\RiderProjects\AdventOfCode\AdventOfCode\obj\Debug\net7.0\ref\AdventOfCode.dll
+C:\Users\gracj\RiderProjects\AdventOfCode\AdventOfCode\bin\Debug\net7.0\Newtonsoft.Json.dll

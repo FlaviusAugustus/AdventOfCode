@@ -1,5 +1,6 @@
-using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 using AoCHelper;
+using Newtonsoft.Json.Linq;
 
 class Day13 : BaseDay
 {
@@ -11,7 +12,7 @@ class Day13 : BaseDay
     }
 
     public override ValueTask<string> Solve_1() =>
-        new($"{PrintElements()}");
+        new($"{1}");
 
     public override ValueTask<string> Solve_2()
     {
@@ -32,67 +33,15 @@ class Day13 : BaseDay
         throw new NotImplementedException();
     }
 
-    private string PrintElements()
-    {
-        var packetLeft = AllPackets().First().Left[1..];
-        var packetRight = AllPackets().First().Right[1..];
-        var itemsLeft = GetAllElements(packetLeft, new Dictionary<string, List<string>>());
-        var itemsRight = GetAllElements(packetRight, new Dictionary<string, List<string>>());
-        var indexLeft = 0;
-        var indexRight = 0;
-        while (indexLeft < itemsLeft.Count && indexRight < itemsRight.Count)
-        {
-             
-        }
-
-        return "";
-    }
-
-    private List<object> GetAllElements(string packet, Dictionary<string, List<string>> dict)
-    {
-        var item = "";
-        var rank = 0;
-        var items = new List<object>();
-        foreach (var character in packet)
-        {
-            item += character;
-
-            if (character == '[')
-            {
-                rank++;
-            }
-
-            if (character == ']')
-            {
-                rank--;
-            }
-
-            if (rank == 0)
-            {
-                if (item != ",")
-                {
-                    items.Add(item);
-                }
-                if (item[0] == '[')
-                {
-                    items.AddRange(GetAllElements(item[1..], dict));
-                }
-
-                item = "";
-            }
-        }
-        
-        return items;
-    }
 }
 
-internal record Packet(string Left, string Right)
+internal record Packet(JArray left, JArray right)
 {
     public static Packet Parse(string line)
     {
         var split = line.Split(Environment.NewLine);
         var left = split[0];
         var right = split[1];
-        return new(left, right);
+        return new(JArray.Parse(left), JArray.Parse(right));
     }
 }
