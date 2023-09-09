@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Numerics;
+using System.Text.RegularExpressions;
 
 namespace AdventOfCode;
 using AoCHelper;
@@ -41,7 +42,7 @@ public class Day15 : BaseDay
         return Enumerable.Range(xmin, Math.Abs(xmax - xmin));
     }
 
-    private long GetDistressSignalFrequency()
+    private BigInteger GetDistressSignalFrequency()
     {
         var list = new List<Point>();
         foreach (var sensor in AllSensors(_input))
@@ -51,19 +52,11 @@ public class Day15 : BaseDay
 
         foreach (var pos in list)
         {
-            var isOk = true;
-            foreach (var sensor in AllSensors(_input))
-            {
-                if (Sensor.CalculateManhattan(sensor.Position, pos) <= sensor.Manhattan)
-                {
-                    isOk = false;
-                    break;
-                }
-            }
+            var isOk = AllSensors(_input).All(sensor => Sensor.CalculateManhattan(sensor.Position, pos) > sensor.Manhattan);
 
             if (isOk && pos is { X: >= 0 and <= 4000000, Y: <= 4000000 and >= 0 })
             {
-                long x = pos.X * 4000000; 
+                BigInteger x = pos.X * 4000000; 
                 return x + pos.Y;
             }
         }
@@ -91,7 +84,6 @@ public class Day15 : BaseDay
                 }
             }
         }
-        
     }
     
     private IEnumerable<int> MaxMinSensor(int y, Sensor sensor)
