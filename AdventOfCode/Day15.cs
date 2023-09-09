@@ -47,7 +47,7 @@ public class Day15 : BaseDay
         var list = new List<Point>();
         foreach (var sensor in AllSensors(_input))
         {
-            list.AddRange(GetPosibleDistressSignalPositions(sensor));
+            list.AddRange(GetPossibleDistressSignalPositions(sensor));
         }
 
         foreach (var pos in list)
@@ -63,7 +63,7 @@ public class Day15 : BaseDay
         return -1;
     }
 
-    private IEnumerable<Point> GetPosibleDistressSignalPositions(Sensor sensor)
+    private IEnumerable<Point> GetPossibleDistressSignalPositions(Sensor sensor)
     {
         var minY = sensor.Position.Y - sensor.Manhattan - 1;
         var maxY = sensor.Position.Y + sensor.Manhattan + 1;
