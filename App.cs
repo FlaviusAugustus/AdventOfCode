@@ -1,8 +1,5 @@
-﻿using System.Data;
-using System.Reflection;
-using AdventOfCode._2022;
+﻿using System.Reflection;
 using AdventOfCode.Utils;
-using AoCHelper;
 
 var yearArgument = args[0];
 if (!int.TryParse(yearArgument, out var year))
