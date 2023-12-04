@@ -18,7 +18,7 @@ public class Day02 : BaseDay
     private int Part1() => _input
         .Split(Environment.NewLine)
         .Select(Game.Parse)
-        .Where(g => g.Throws.All(t => t.HasEnoughCubes()) )
+        .Where(g => g.Throws.All(t => t.HasEnoughCubes()))
         .Sum(g => g.Id);
 
     private int Part2() => _input
