@@ -27,7 +27,7 @@ public class Day03 : BaseDay
             .Sum(g => g.First().ToInt(_inputSplit)*g.Last().ToInt(_inputSplit));
     private int SumEngineParts() => 
         AllEngineNumbers()
-            .Where(engineNumber => IsConnected(engineNumber.Start, engineNumber.End))
+            .Where(IsConnected)
             .Sum(engineNumber => engineNumber.ToInt(_inputSplit));
 
     private IEnumerable<EngineNumber> AllEngineNumbers()
@@ -49,29 +49,29 @@ public class Day03 : BaseDay
         }
     }
 
-    private bool IsConnected(Point start, Point end) =>
-        GetSurroundingCoordinates(start, end).Any(c => EngineNumber.IsPart(c, _inputSplit));
+    private bool IsConnected(EngineNumber engineNumber) =>
+        GetSurroundingCoordinates(engineNumber).Any(c => EngineNumber.IsPart(c, _inputSplit));
 
     private EngineNumber SetPartCoordinateForGears(EngineNumber engineNumber)
     {
-        var coordinate = GetSurroundingCoordinates(engineNumber.Start, engineNumber.End)
+        var coordinate = GetSurroundingCoordinates(engineNumber)
             .Where(c => _inputSplit[c.Y][c.X] == '*').ToList();
         if (coordinate.Count == 0)
             return engineNumber with{ PartCoord = EngineNumber.IncorrectPartCoord };
         return engineNumber with { PartCoord = coordinate.Single() };
     }
 
-    private IEnumerable<Point> GetSurroundingCoordinates(Point start, Point end)
+    private IEnumerable<Point> GetSurroundingCoordinates(EngineNumber engineNumber)
     {
         var possibleCoords = new List<Point>
         {
-            start with { X = start.X - 1 },
-            end 
+            engineNumber.Start with { X = engineNumber.Start.X - 1 },
+            engineNumber.End 
         };
-        for (var i = start.X - 1; i < end.X + 1; i++)
+        for (var i = engineNumber.Start.X - 1; i < engineNumber.End.X + 1; i++)
         {
-            possibleCoords.Add(new Point(i, start.Y - 1));
-            possibleCoords.Add(new Point(i, start.Y + 1));
+            possibleCoords.Add(new Point(i, engineNumber.Start.Y - 1));
+            possibleCoords.Add(new Point(i, engineNumber.Start.Y + 1));
         }
 
         return possibleCoords
