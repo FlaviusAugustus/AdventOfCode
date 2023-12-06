@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Security.Cryptography;
 using AoCHelper;
 
 namespace AdventOfCode._2023;
@@ -12,44 +13,48 @@ public class Day04 : BaseDay
     public override ValueTask<string> Solve_1() =>
         new($"{Part1()}");
 
-    private int Part1()
-    {
-        var sum = 0d;
-        foreach (var line in _input.Split(Environment.NewLine))
-        {
-            var scratchCard = ScratchCard.Parse(line);
-            if(scratchCard.PresentWinnings.Count != 0)
-                sum += Math.Pow(2, scratchCard.PresentWinnings.Count - 1);
-        }
-        return (int)sum;
-    }
-
     public override ValueTask<string> Solve_2() =>
         new($"{Part2()}");
+    
+    private int Part1() => _input.Split(Environment.NewLine)
+        .Select(ScratchCard.Parse)
+        .Where(c => c.WinningCount > 0)
+        .Select(c => (int)Math.Pow(2, c.WinningCount-1))
+        .Sum();
 
     private int Part2()
     {
-        var sum = 0;
         var scratchCards = _input
             .Split(Environment.NewLine)
             .Select(ScratchCard.Parse)
             .ToList();
 
-        foreach (var card in scratchCards)
-        {
-            sum += FindAllScratchCards(0, card, scratchCards);
-        } 
-
+        var sum = scratchCards.Count;
+        sum += scratchCards.Sum(card => FindAllScratchCards(card, scratchCards));
+        
         return sum;
     }
 
-    private int FindAllScratchCards(int sum, ScratchCard card,  List<ScratchCard> scratchCards)
+    private static int FindAllScratchCards(ScratchCard card,  IReadOnlyList<ScratchCard> scratchCards)
     {
-        return 0;
+        var sum = 0;
+        if (card.WinningCount == 0)
+        {
+            return 0;
+        }
+
+        var cardsWon = Enumerable.Range(card.Id + 1, card.WinningCount).ToList();
+        foreach (var cardWon in cardsWon)
+        {
+            sum += FindAllScratchCards(scratchCards[cardWon - 1], scratchCards);
+        }
+
+        sum += cardsWon.Count;
+        return sum;
     }
 }
 
-internal record ScratchCard(int Id, List<int> PresentWinnings)
+internal record ScratchCard(int Id, int WinningCount)
 {
     public static ScratchCard Parse(string line)
     {
@@ -57,18 +62,17 @@ internal record ScratchCard(int Id, List<int> PresentWinnings)
         var id = int.Parse(split[0].Split(" ")[^1]);
 
         var nums = split[1].Split("|");
-        var present= nums[0].Split(" ")
-            .Where(s => !string.IsNullOrEmpty(s))
-            .Select(int.Parse)
-            .ToList();
+        var present = ParseNums(nums[0]);
 
-        var winning = nums[1].Split(" ")
-            .Where(s => !string.IsNullOrEmpty(s))
-            .Select(int.Parse)
-            .ToList();
+        var winning = ParseNums(nums[1]);
 
-        var presentWinnings = Enumerable.Intersect(present, winning).ToList();
+        var presentWinnings = Enumerable.Intersect(present, winning).Count();
         
         return new ScratchCard(id, presentWinnings);
     }
+    
+    private static IEnumerable<int> ParseNums(string line) => line.Split(" ")
+        .Where(s => !string.IsNullOrEmpty(s))
+        .Select(int.Parse)
+        .ToList();
 }
