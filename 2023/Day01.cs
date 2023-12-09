@@ -20,7 +20,7 @@ public class Day01 : BaseDay
         { "nine",  9 }
     };
 
-public Day01()
+    public Day01()
     { 
         _input = File.ReadAllText($"../../../2023/{InputFilePath}");
     }
