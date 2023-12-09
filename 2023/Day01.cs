@@ -28,17 +28,18 @@ public class Day01 : BaseDay
     public override ValueTask<string> Solve_1() =>
         new($"{Part1()}");
 
-    public int Part1() => AllCalibrationLines()
-        .Select(GetCalibrationValue)
-        .Sum();
-
-    public int? Part2() => AllCalibrationLines()
-        .Select(GetCalibrationValueWithLetters)
-        .Sum();
     public override ValueTask<string> Solve_2() =>
         new($"{Part2()}");
 
-    public int GetCalibrationValue(string calibrationLine)
+    private int Part1() => AllCalibrationLines()
+        .Select(GetCalibrationValue)
+        .Sum();
+
+    private int? Part2() => AllCalibrationLines()
+        .Select(GetCalibrationValueWithLetters)
+        .Sum();
+    
+    private int GetCalibrationValue(string calibrationLine)
     {
         var first = calibrationLine.First(char.IsDigit);
         var last = calibrationLine.Last(char.IsDigit);
@@ -47,51 +48,47 @@ public class Day01 : BaseDay
         return value;
     }
 
-    public int? GetCalibrationValueWithLetters(string calibrationLine)
+    private int? GetCalibrationValueWithLetters(string calibrationLine)
     {
-        int? first = null;
-        int? last = null;
-
+        var calibrationValue = new CalibrationValue();
+        
         for (var i = 0; i < calibrationLine.Length; i++)
         {
             if (char.IsDigit(calibrationLine[i]))
             {
-                if (first is null)
-                {
-                    first = calibrationLine[i] - '0';
-                }
-                else
-                {
-                    last = calibrationLine[i] - '0';
-                }
+                calibrationValue.Set(calibrationLine[i] - '0');
             }
-
-            foreach (var number in Nums.Keys.Where(number => calibrationLine[i..].StartsWith(number)))
+            
+            var possibleMatches = Nums.Keys.Where(number => calibrationLine[i..].StartsWith(number));
+            foreach (var number in possibleMatches)
             {
-                if (first is null)
-                {
-                    first = Nums[number];
-                }
-                else
-                {
-                    last = Nums[number];
-                }
+                calibrationValue.Set(Nums[number]);
             }
         }
-
-        if (last == null)
-            last = first;
-        return ((first) * 10 + (last));
+        return calibrationValue.Number;
     }
-    public IEnumerable<string> AllCalibrationLines() =>
+    
+   private IEnumerable<string> AllCalibrationLines() =>
         _input.Split(Environment.NewLine);
 }
 
-internal struct CalibrationValue(int? first, int? Last)
+internal struct CalibrationValue()
 {
+    private int? _first;
+    private int? _last;
+
+    public int? Number
+    {
+        get
+        {
+            _last ??= _first;
+            return _first * 10 + _last;
+        }
+    }
+
     public void Set(int number)
     {
-        Last = first == null ? Last : number;
-        first ??= number;
+        _last = _first == null ? _last : number;
+        _first ??= number;
     }
 }
