@@ -25,30 +25,41 @@ public class Day03 : BaseDay
             .GroupBy(e => e.PartCoord)
             .Where(g => g.Count() == 2)
             .Sum(g => g.First().ToInt(_inputSplit)*g.Last().ToInt(_inputSplit));
+    
     private int SumEngineParts() => 
         AllEngineNumbers()
             .Where(IsConnected)
             .Sum(engineNumber => engineNumber.ToInt(_inputSplit));
 
-    private IEnumerable<EngineNumber> AllEngineNumbers()
+    private IEnumerable<EngineNumber> AllEngineNumbers() => 
+        AllCoordinates()
+            .Where(c => char.IsDigit(_inputSplit[c.Y][c.X]))
+            .Select(c => new EngineNumber(
+                c, 
+                c with { X = ExtractNumber(c) },
+                new Point(-1, -1)));
+
+    private int ExtractNumber(Point coordinate)
+    {
+        var j = coordinate.X;
+        while (j != _inputSplit[0].Length && char.IsDigit(_inputSplit[coordinate.Y][j]))
+        {
+            j++;
+        }
+        return j;
+    }
+
+    private IEnumerable<Point> AllCoordinates() 
     {
         for (var i = 0; i < _inputSplit.Length; i++)
         {
             for (var j = 0; j < _inputSplit[0].Length; j++)
             {
-                if (!char.IsDigit(_inputSplit[i][j]))
-                    continue;
-                
-                Point start = new(j, i);
-                while (j != _inputSplit[0].Length && char.IsDigit(_inputSplit[i][j]))
-                {
-                    j++;
-                }
-                yield return new EngineNumber(start, start with{ X = j }, new Point(-1, -1));
+                yield return new Point(j, i);
             }
         }
     }
-
+    
     private bool IsConnected(EngineNumber engineNumber) =>
         GetSurroundingCoordinates(engineNumber).Any(c => EngineNumber.IsPart(c, _inputSplit));
 
@@ -89,6 +100,7 @@ internal record EngineNumber(Point Start, Point End, Point PartCoord)
     public static bool IsPart(Point point, string[] chars) =>
         chars[point.Y][point.X] != '.' && !char.IsDigit(chars[point.Y][point.X]);
 }
+
 internal record Point(int X, int Y)
 {
     public bool IsValid(string[] chars) =>
