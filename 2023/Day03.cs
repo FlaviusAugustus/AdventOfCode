@@ -34,8 +34,7 @@ public class Day03 : BaseDay
     private IEnumerable<EngineNumber> AllEngineNumbers() => 
         AllCoordinates()
             .Where(c => char.IsDigit(_inputSplit[c.Y][c.X]))
-            .Select(c => new EngineNumber(
-                c, 
+            .Select(c => new EngineNumber(c, 
                 c with { X = ExtractNumber(c) },
                 new Point(-1, -1)));
 
