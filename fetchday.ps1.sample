@@ -1,0 +1,26 @@
+param(
+    [ValidateRange(2015, 2100)]
+    [string]$Year = (Get-Date).year.ToString(),
+    [ValidateRange(1, 25)]
+    [string]$Day = (Get-Date).day.ToString()
+)
+
+$downloadToPath = "./$($Year)/Inputs/$($Day.PadLeft(2,'0')).txt"
+
+if (Test-Path($downloadToPath))
+{
+    Write-Host "Input file for year $($Year), day $($Day) already exists."
+    return
+}
+
+$remoteFileLocation = "https://adventofcode.com/$($Year)/day/$($Day)/input"
+$session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+$cookie = New-Object System.Net.Cookie 
+   
+$cookie.Name = "session"
+$cookie.Value = "YourAdventOfCodeSessionCookie"
+$cookie.Domain = ".adventofcode.com"
+
+$session.Cookies.Add($cookie);
+
+Invoke-WebRequest $remoteFileLocation -WebSession $session -TimeoutSec 900 -OutFile $downloadToPath

@@ -3,6 +3,9 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
+# day fetching script
+fetchday.ps1
+
 # dotenv files
 .env
 
