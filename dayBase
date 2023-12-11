@@ -1,0 +1,19 @@
+﻿using AoCHelper;
+
+namespace AdventOfCode.[_YEAR].[DAY];
+
+public class [DAY] : BaseDay
+{
+   private readonly string _input;
+   
+   public [DAY]()
+   {
+      _input = File.ReadAllText($"../../../{InputFilePath}");
+   }
+
+   public override ValueTask<string> Solve_1() =>
+      new($"{null}");
+   
+   public override ValueTask<string> Solve_2() =>
+      new($"{null}");
+}
