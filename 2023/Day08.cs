@@ -45,7 +45,9 @@ public class Day08 : BaseDay
             .Where(k => k[^1] == 'A')
             .ToList();
         
-        var roadLengths = currentNodes.Select(r => 0).ToList();
+        var roadLengths = currentNodes
+            .Select(r => 0)
+            .ToList();
 
         for(var k = 0; k < currentNodes.Count; k++)
         {
@@ -54,20 +56,6 @@ public class Day08 : BaseDay
 
         return Lcm(roadLengths);
     }
-
-    private long Lcm(IList<int> toCalc)
-    {
-        long ans = toCalc[0];
-        for(var i = 1; i < toCalc.Count; i++)
-        {
-            ans = toCalc[i] * ans / Gcd(toCalc[i], ans);
-        }
-
-        return ans;
-    }
-
-    private long Gcd(long a, long b) =>
-        b == 0 ? a : Gcd(b, a % b);
     
     private Dictionary<string, Directions> GetDirectionMap()
     {
@@ -82,6 +70,21 @@ public class Day08 : BaseDay
 
         return directionsMap;
     }
+    
+
+    private long Lcm(IList<int> toCalc)
+    {
+        long ans = toCalc[0];
+        for(var i = 1; i < toCalc.Count; i++)
+        {
+            ans = toCalc[i] * ans / Gcd(toCalc[i], ans);
+        }
+
+        return ans;
+    }
+
+    private long Gcd(long a, long b) =>
+        b == 0 ? a : Gcd(b, a % b);
     
 }
 
